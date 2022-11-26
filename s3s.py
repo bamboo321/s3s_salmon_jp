@@ -915,7 +915,11 @@ def prepare_job_result(job, ismonitoring, isblackout, overview_data=None):
 
 		weapons = []
 		for weapon in player["weapons"]: # should always be returned in in english due to headbutt() using forcelang
-			wep_string = weapon["name"].lower().replace(" ", "_").replace("-", "_").replace(".", "").replace("'", "")
+			try:
+				weapon_eng = convert_to_eng[weapon['name']]
+			except KeyError:
+				wep_string == 'ramdom'
+			wep_string = weapon_eng.lower().replace(" ", "_").replace("-", "_").replace(".", "").replace("'", "")
 			if wep_string == "random": # NINTENDOOOOOOO
 				wep_string = None
 			weapons.append(wep_string)
@@ -1000,6 +1004,22 @@ def post_result(data, ismonitoring, isblackout, istestrun, overview_data=None):
 			results = data["results"]
 		except KeyError:
 			results = [data] # single battle/job - make into a list
+	
+	# https://stat.ink/api-info/weapon3
+	global weapon_json
+	try:
+		weapon_json
+	except NameError:
+		weapon_text = requests.get('https://stat.ink/api/v3/salmon/weapon?full=1').text
+		weapon_json = json.loads(weapon_text)
+	
+	global convert_to_eng
+	convert_to_eng = dict()
+	if any(convert_to_eng) == False:
+		for weapon in weapon_json:
+			lang = USER_LANG.replace('-', '_')
+			convert_to_eng[weapon['name'][lang]] = weapon['name']['en_US']
+
 
 	# filter down to one battle at a time
 	for i in range(len(results)):
@@ -1565,7 +1585,7 @@ def main():
 
 	# setup
 	#######
-	check_for_updates()
+	# check_for_updates()
 	check_statink_key()
 	set_language()
 
