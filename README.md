@@ -1,3 +1,7 @@
+This repository is a version that addresses this issue. [weapons: Weapons is invalid. #80](https://github.com/frozenpandaman/s3s/issues/80)
+
+I uploaded a json file with Japanese weapon names to stat.ink, no problem.
+
 s3s 🦑
 =====
 
